@@ -153,7 +153,6 @@ python run_evaluation.py --seed 42 --count 200
 ```bash
 python server.py
 ```
-*Access the interface locally at `http://localhost:8000` (OpenAPI docs at `http://localhost:8000/docs`).*
 
 ---
 
