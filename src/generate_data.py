@@ -164,7 +164,11 @@ def generate_transactions(count: int = 200, db_path=None, seed: int = 42) -> pd.
     conn.close()
 
     # Save to CSV
-    df.to_csv(CSV_PATH, index=False)
+    try:
+        CSV_PATH.parent.mkdir(parents=True, exist_ok=True)
+        df.to_csv(CSV_PATH, index=False)
+    except Exception:
+        pass  # In read-only serverless environments, DB persistence is sufficient
 
     return df
 

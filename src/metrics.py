@@ -13,6 +13,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
+import os
 import json
 from typing import Dict, Any
 from src.db import get_connection
@@ -25,7 +26,12 @@ from src.constants import (
     SILENT_ACTIONS
 )
 
-REPORT_PATH = PROJECT_ROOT / "report.json"
+def get_default_report_path() -> Path:
+    if os.getenv("VERCEL"):
+        return Path("/tmp/report.json")
+    return PROJECT_ROOT / "report.json"
+
+REPORT_PATH = get_default_report_path()
 
 def calculate_metrics(db_path=None, export_path=None) -> Dict[str, Any]:
     """
@@ -211,8 +217,12 @@ def calculate_metrics(db_path=None, export_path=None) -> Dict[str, Any]:
     }
 
     target_export = Path(export_path) if export_path else REPORT_PATH
-    with open(target_export, "w", encoding="utf-8") as f:
-        json.dump(metrics, f, indent=2)
+    try:
+        target_export.parent.mkdir(parents=True, exist_ok=True)
+        with open(target_export, "w", encoding="utf-8") as f:
+            json.dump(metrics, f, indent=2)
+    except Exception:
+        pass
 
     return metrics
 

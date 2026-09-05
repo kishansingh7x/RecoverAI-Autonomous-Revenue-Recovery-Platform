@@ -10,7 +10,7 @@ Currently, the project code is stored and fully functional **locally on your mac
 - 🌐 **Flagship Web App & REST API** (`server.py` on port `8000`, built with StitchMCP design system)
 - 📖 **Interactive Swagger / OpenAPI Explorer** (`/docs` endpoint for judges to test individual endpoints)
 - 🐳 **Docker & Docker Compose** (Containerized production deployment serving both Web App and API)
-- ☁️ **Render / Railway / PaaS** (`Procfile` & `render.yaml`)
+- ☁️ **Vercel / Render / Railway / PaaS** (`vercel.json`, `Procfile`, & `render.yaml`)
 - ⚡ **Streamlit Backup Dashboard** (`app.py` on port `8501`)
 - 🛡️ **GitHub Actions CI/CD** (Automated testing on every push)
 

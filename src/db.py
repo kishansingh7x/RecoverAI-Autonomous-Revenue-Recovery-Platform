@@ -7,12 +7,20 @@ import sqlite3
 import os
 from pathlib import Path
 
-# Default database location in the project root
-DEFAULT_DB_PATH = Path(__file__).resolve().parent.parent / "recovery.db"
+def get_default_db_path() -> Path:
+    """Returns the appropriate SQLite DB path, using /tmp on Vercel/serverless environments."""
+    if os.getenv("VERCEL"):
+        return Path("/tmp/recovery.db")
+    return Path(__file__).resolve().parent.parent / "recovery.db"
+
+DEFAULT_DB_PATH = get_default_db_path()
 
 def get_connection(db_path=None):
     """Returns a sqlite3 connection with Row factory enabled."""
     target_path = Path(db_path) if db_path else DEFAULT_DB_PATH
+    if os.getenv("VERCEL") and not target_path.exists():
+        target_path.parent.mkdir(parents=True, exist_ok=True)
+        ensure_db_schema(target_path)
     conn = sqlite3.connect(target_path)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys = ON;")
