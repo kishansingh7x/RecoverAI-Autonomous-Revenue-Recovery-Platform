@@ -153,9 +153,7 @@ python run_evaluation.py --seed 42 --count 200
 ```bash
 python server.py
 ```
-Open your browser to:
-- **Live Dashboard:** [http://127.0.0.1:8000](http://127.0.0.1:8000)
-- **OpenAPI Interactive Docs:** [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+*Access the interface locally at `http://localhost:8000` (OpenAPI docs at `http://localhost:8000/docs`).*
 
 ---
 
