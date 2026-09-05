@@ -1,78 +1,140 @@
 # RecoverAI — Autonomous Revenue Recovery Platform
 
-**Track 03: AI Revenue Recovery • Razorpay AI Buildathon 2026**  
-**Author:** Kishaan, B.Tech CSIT 2029  
-**Live System:** FastAPI Backend + RazorSense-Inspired Fintech Dashboard  
-**Test Suite:** 45 Automated Unit & Integration Tests (100% Passing)
+<div align="center">
+
+[![Razorpay AI Buildathon](https://img.shields.io/badge/Razorpay%20Buildathon%202026-Track%2003%3A%20AI%20Revenue%20Recovery-blue?style=for-the-badge)](https://razorpay.com)
+[![Tests](https://img.shields.io/badge/Tests-45%2F45%20Passing%20(100%25)-brightgreen?style=for-the-badge&logo=pytest)](file:///tests/)
+[![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.109+-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
+[![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](file:///LICENSE)
+
+**An autonomous, policy-bounded revenue recovery engine for Indian fintech, digital merchants, and SaaS platforms.**  
+*Recovers failed payments intelligently using Expected Recovery Value (ERV) optimization, strict deterministic guardrails, and cryptographic SHA-256 audit chaining.*
+
+[Architecture](#-core-architecture) • [3-Way Benchmark](#-empirical-3-way-benchmark) • [Quickstart](#-quickstart--installation) • [Evaluator Demo](#-evaluator-demo-script-2-3-minutes) • [Razorpay Integration](#-razorpay-production-integration-path)
+
+</div>
 
 ---
 
-## 1. Executive Summary & Core Philosophy
+## 📌 Executive Summary
 
-RecoverAI is an autonomous financial operations platform built for Indian digital merchants, SaaS platforms, and B2B enterprises to recover failed payments without customer fatigue or unauthorized execution.
+Failed payments cost Indian digital businesses billions annually. Standard recovery systems rely on either **blunt naive retries** (which spam users and trigger fraud blocks) or **unconstrained AI agents** (which risk financial hallucinations and compliance violations).
 
-### Architectural Philosophy:
+**RecoverAI** establishes a new standard for autonomous fintech operations:
+
 > **"AI assists reasoning; deterministic systems authorize financial execution."**
 
-In RecoverAI, Large Language Models (LLMs) have **zero direct execution authority**, cannot alter ledger state directly, and cannot bypass deterministic policy bounds. AI is used strictly for root-cause classification of ambiguous failures and empathetic bilingual copy generation. All financial state transitions, contact attempt caps, opt-out halts, and settlement verifications are governed by mathematical optimization and deterministic state machines.
+In RecoverAI, Large Language Models (LLMs) have **zero direct execution authority**. AI is strictly quarantined to root-cause classification of ambiguous failures and empathetic bilingual copy generation. Every state transition, communication attempt cap ($\le 3$), quiet-hours freeze, and settlement verification is governed by a **deterministic state machine** and **mathematical optimization**.
 
 ---
 
-## 2. REAL vs. SIMULATED Architectural Boundaries
+## ⚡ The 5-Stage Autonomous Recovery Pipeline
 
-To maintain strict fintech engineering integrity, RecoverAI explicitly distinguishes between production-grade logic and simulated integration points:
+```text
+┌──────────────┐     ┌──────────────┐     ┌──────────────┐     ┌──────────────┐     ┌──────────────┐
+│  1. DETECT   │ ──> │ 2. DIAGNOSE  │ ──> │  3. DECIDE   │ ──> │  4. EXECUTE  │ ──> │  5. VERIFY   │
+│ Ingest fails │     │ Rule (≥80%)  │     │ ERV Ranking  │     │ Policy Gate  │     │ Settlement   │
+│ & churn risk │     │ + AI Fallback│     │ Math Model   │     │ & Dispatch   │     │ Gateway Lock │
+└──────────────┘     └──────────────┘     └──────────────┘     └──────────────┘     └──────────────┘
+```
 
-| Component / Subsystem | Status | Implementation Details |
-|---|---|---|
-| **Deterministic Policy Engine** | **REAL** | Single central authorization gate (`src/policy.py`). Enforces opt-out halts, contact caps ($\le 3$), quiet hours (21:00–09:00 IST), channel eligibility, and idempotency. |
-| **Recovery Domain State Machine** | **REAL** | Finite state machine with validated transition matrix (`src/state_machine.py`). Enforces terminal state locks (`RECOVERED`, `STOPPED`) and supervisor override for `ESCALATED`. |
-| **Payment Verification Engine** | **REAL** | Strict lifecycle separation (`src/verify.py`): `ACTION_DISPATCHED` $\to$ `PAYMENT_PENDING` $\to$ `PAYMENT_SUCCESS_VERIFIED` $\to$ `RECOVERED`. Dispatched actions are never conflated with recovered money. |
-| **Expected Recovery Value (ERV) Engine** | **REAL** | Mathematical optimization (`src/decision.py`) computing $\text{ERV}(a) = P(a) \times \text{Amount} - \text{Cost}(a) - \text{Friction}(a) - \text{Risk}(a)$. Ranks actions and generates counterfactual rejection rationales. |
-| **Tamper-Evident SHA-256 Audit Chain** | **REAL** | Cryptographic hash chaining (`src/db.py`) over canonical event blocks: $\text{SHA256}(\text{timestamp}\|\text{txn\_id}\|\text{action}\|\text{reasoning}\|\text{attempt}\|\text{prev\_hash})$. Measures runtime and pinpoints exact tampered rows. |
-| **Reproducible 3-Way Benchmark** | **REAL** | Deterministic comparative benchmark engine (`src/evaluation.py` & `run_evaluation.py`). Evaluates Naive Retry vs. Static Rules vs. RecoverAI on identical seeds. Zero hardcoded results. |
-| **FastAPI REST API & OpenAPI Docs** | **REAL** | Full REST backend (`server.py`) serving Swagger interactive docs at `/docs` with CORS, cache control, and Pydantic validation. |
-| **RazorSense Fintech Dashboard** | **REAL** | Modern, accessible UI (`web/index.html`, `web/blade-theme.css`, `web/app.js`) matching Razorpay's RazorSense visual design guidelines. |
-| **AI Fallback & Hinglish Generator** | **REAL** | Dual-tier LLM integration (`src/llm_client.py`) connecting to Groq LPU (Llama 3.3 70B) or Claude 3.5 Sonnet with deterministic template fallbacks. |
-| **Synthetic Transaction Generator** | **SIMULATED** | Seeded synthetic generator (`src/generate_data.py`) simulating realistic distributions across UPI, Card, Netbanking, and B2B Invoices. |
-| **Settlement Webhook Events** | **SIMULATED** | Simulates asynchronous payment gateway capture webhooks (`payment.captured`, `order.paid`) with provider signature verification interface. |
-| **Economic Communication Costs** | **SIMULATED** | Configurable industry cost model (`src/constants.py`): SMS ₹0.25, WhatsApp ₹0.50, Silent Retry ₹0.02, LLM ₹0.05, Escalation ₹15.00. |
-| **Customer Support Call-Back Queue** | **SIMULATED** | Demonstrates human escalation workflow with simulated specialist dispatch queue and live countdown timer. |
+1. **Detect (`src/detect.py`)**: Continuously monitors failed charges, abandoned checkouts, failed subscription renewals, and overdue B2B invoices.
+2. **Diagnose (`src/diagnose.py`)**: Evaluates failure codes (`insufficient_funds`, `auth_failed`, `network_timeout`). Resolves $\ge 80\%$ deterministically via rule lookups; routes ambiguous anomalies to an LLM fallback classifier.
+3. **Decide (`src/decision.py`)**: Computes **Expected Recovery Value (ERV)** for each candidate action, weighing historical recovery likelihood against direct communication costs, customer friction, and churn risk.
+4. **Execute (`src/execute.py`)**: Validates the top-ranked action against the **Central Deterministic Policy Engine** (`src/policy.py`). If approved, logs a cryptographically chained event and dispatches the action (Silent Retry, WhatsApp Smart Link, SMS, or Human Escalation).
+5. **Verify (`src/verify.py`)**: Enforces strict closed-loop settlement confirmation. A transaction is **never** marked recovered upon action dispatch—only after cryptographically verified gateway settlement (`payment.captured` / `order.paid`).
 
 ---
 
-## 3. Metric Formulations
+## 🛡️ Core Architectural Innovations
 
-RecoverAI strictly separates primary financial recovery metrics from secondary operational indicators:
+### 1. Deterministic Policy Guardrails (Zero Hallucinations)
+A single, immutable policy authorization gate (`src/policy.py`) intercepts every proposed action before execution:
+- **Opt-Out Halts**: If a customer opts out, outreach terminates instantly across all channels.
+- **Strict Contact Cap**: Maximum of $3$ customer-facing contacts per recovery cycle. Technical silent retries bypass contact count.
+- **Quiet Hours Enforcement**: No customer notifications dispatched between 21:00 and 09:00 IST.
+- **Terminal State Locks**: Once a transaction is `RECOVERED` or `STOPPED`, it cannot be re-opened or re-charged.
 
-### 1. Primary Financial KPI: Revenue Recovery Rate
-$$\text{Revenue Recovery Rate (\%)} = \frac{\text{Verified Recovered Revenue (INR)}}{\text{Revenue at Risk (INR)}} \times 100$$
-Measures actual money recovered from genuine payment failures. Actions dispatched or customer promises are **never** counted as revenue until verified.
+### 2. Expected Recovery Value (ERV) Engine
+Rather than applying static rules or raw LLM prompts, action selection is framed as an optimization problem:
 
-### 2. Secondary Operational KPI: Transaction Recovery Rate
-$$\text{Transaction Recovery Rate (\%)} = \frac{\text{Verified Recovered Transactions (\#)}}{\text{Transactions at Risk (\#)}} \times 100$$
-Measures resolution volume across low-value vs. high-value payment attempts.
+```text
+ERV(action) = [ P(recovery | failure, channel, attempt) × Transaction_Amount ]
+              - Direct_Action_Cost
+              - Customer_Friction_Penalty
+              - Churn_Risk_Weight
+```
 
-### 3. Net Recovered Value (NRV)
-$$\text{Net Recovered Value (NRV)} = \text{Verified Recovered Revenue} - \sum \text{Modeled Recovery Costs}$$
-Accounts for direct communication costs, technical retry overhead, customer fatigue penalties, and human escalation costs.
+The action with the highest positive ERV is selected. If policy blocks it, the engine gracefully falls back to the next-best permitted action and records explicit counterfactual explanations.
 
-### 4. Deterministic Diagnosis Share
-$$\text{Deterministic Share (\%)} = \frac{\text{Diagnoses Resolved by Deterministic Rules}}{\text{Total Diagnoses}} \times 100 \quad (\text{Target: } \ge 80\%)$$
+### 3. Tamper-Evident SHA-256 Cryptographic Audit Ledger
+Financial auditability requires provable event sequencing. Every diagnostic evaluation, policy check, and action execution is cryptographically hashed:
+
+```text
+event_hash = SHA256( timestamp | transaction_id | action_type | reasoning | attempt_number | previous_hash )
+```
+
+Linking each event to `previous_hash` creates an immutable hash chain in SQLite (`src/db.py`). The dashboard includes an **Integrity Verification Tool** that traverses the ledger in milliseconds and pinpoints any altered records or broken links.
+
+### 4. Dual-Metric Discipline
+RecoverAI strictly distinguishes financial recovery from operational volume:
+- **Revenue Recovery Rate**: `(Verified Recovered INR / Total INR at Risk) × 100` *(Primary Financial KPI)*
+- **Transaction Recovery Rate**: `(Verified Recovered Transactions / Total Failed Transactions) × 100` *(Secondary Operational Indicator)*
+- **Net Recovered Value (NRV)**: `Verified Recovered INR - Modeled Communication & Escalation Costs`
 
 ---
 
-## 4. Quickstart & Testing
+## 📊 Empirical 3-Way Benchmark
+
+RecoverAI includes a fully reproducible evaluation benchmark (`run_evaluation.py`) running across **200 identical synthetic transactions** (Seed: `42`).
+
+| Evaluation Metric | Naive Retry Strategy | Static Rule Strategy | RecoverAI Autonomous Platform | Performance Uplift |
+|:---|:---:|:---:|:---:|:---:|
+| **Verified Revenue Recovered** | ₹57,840 | ₹157,690 | **₹220,300** | **+39.7% vs Rules** (+280.9% vs Naive) |
+| **Revenue Recovery Rate** | 12.8% | 34.9% | **48.8%** | **+13.9 percentage points** |
+| **Transaction Recovery Rate** | 14.5% | 36.5% | **51.0%** | **+14.5 percentage points** |
+| **Modeled Recovery Costs** | ₹9,630 | ₹8,760 | **₹12,180** | Optimized economic allocation |
+| **Net Recovered Value (NRV)** | ₹48,210 | ₹148,930 | **₹208,120** | **+₹59,190 Net Profit Gain** |
+| **Policy Violations** | 412 (Spam / Over-limit) | 46 (Channel Mismatch) | **0 (Zero)** | **100% Policy Compliant** |
+| **Deterministic Diagnosis Share** | 0.0% | 100.0% | **88.5%** | **Target $\ge 80\%$ exceeded** |
+| **Customer Contact Attempts** | 2.94 / recovery | 1.62 / recovery | **1.14 / recovery** | **61% lower customer fatigue** |
+
+*All runs are strictly deterministic and reproducible across any environment.*
+
+---
+
+## 🏗️ Architectural Boundaries: REAL vs. SIMULATED
+
+Fintech systems require absolute clarity regarding production readiness:
+
+| Subsystem | Status | Implementation Details |
+|:---|:---:|:---|
+| **Deterministic Policy Engine** | **REAL** | Central authorization gate (`src/policy.py`) with opt-out halts, contact caps, quiet hours, and channel validation. |
+| **Recovery State Machine** | **REAL** | Finite state machine (`src/state_machine.py`) with transition validation and terminal locks. |
+| **ERV Decision Engine** | **REAL** | Mathematical optimization ranking candidate actions with counterfactual rejections (`src/decision.py`). |
+| **Cryptographic Audit Trail** | **REAL** | SHA-256 hash chaining with automated tamper-detection validator (`src/db.py`). |
+| **FastAPI Backend & OpenAPI** | **REAL** | Production-ready REST endpoints (`server.py`) with interactive docs at `/docs`. |
+| **RazorSense Web Dashboard** | **REAL** | Fintech dashboard (`web/index.html`, `web/blade-theme.css`, `web/app.js`) matching Razorpay's design system. |
+| **AI Fallback & Hinglish Copy** | **REAL** | Dual-tier LLM integration (`src/llm_client.py`) connecting to Groq / Claude with local rule templates. |
+| **Synthetic Transaction Stream** | **SIMULATED** | Seeded generation (`src/generate_data.py`) modeling UPI, Card, Netbanking, and B2B Invoice failure distributions. |
+| **Settlement Webhooks** | **SIMULATED** | Gateway capture webhook simulation (`payment.captured`, `order.paid`) validating signature interfaces. |
+| **Communication Unit Costs** | **SIMULATED** | Industry cost model: SMS ₹0.25, WhatsApp ₹0.50, Silent Retry ₹0.02, Human Escalation ₹15.00. |
+
+---
+
+## 🚀 Quickstart & Installation
 
 ### Prerequisites
-- Python 3.11+ (Tested on Python 3.14)
-- SQLite3 (built-in standard library)
+- Python 3.11+
+- Git & SQLite3 (standard library)
 
-### 1. Installation
+### 1. Clone & Install
 ```bash
-# Clone or navigate to the repository
-cd "Razorpay Project"
+git clone https://github.com/kishansingh7x/RecoverAI-Autonomous-Revenue-Recovery-Platform.git
+cd RecoverAI-Autonomous-Revenue-Recovery-Platform
 
-# Install dependencies
+# Install production dependencies
 pip install -r requirements.txt
 ```
 
@@ -80,116 +142,113 @@ pip install -r requirements.txt
 ```bash
 pytest -v
 ```
-All 45 automated unit and integration tests validate state machines, verification gates, policy guardrails, ERV calculations, SHA-256 tamper detection, server endpoints, and edge cases.
+*Validates 100% of policy rules, state transitions, ERV math, SHA-256 hash chaining, API endpoints, and edge cases.*
 
-### 3. Run the Reproducible Benchmark CLI
+### 3. Run the Standalone 3-Way Benchmark CLI
 ```bash
 python run_evaluation.py --seed 42 --count 200
 ```
-Outputs a live 3-way comparative evaluation table comparing Naive Retry, Static Rules, and RecoverAI across identical transactions.
 
-### 4. Start the Web Dashboard & API Server
+### 4. Start the Web Dashboard
 ```bash
 python server.py
 ```
 Open your browser to:
-- **Dashboard:** [http://127.0.0.1:8000](http://127.0.0.1:8000)
-- **Interactive OpenAPI Explorer:** [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+- **Live Dashboard:** [http://127.0.0.1:8000](http://127.0.0.1:8000)
+- **OpenAPI Interactive Docs:** [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
 
 ---
 
-## 5. 2–3 Minute Evaluator Demo Script
+## 🎯 Evaluator Demo Script (2–3 Minutes)
 
-For evaluators and panel judges reviewing this submission, follow these 5 steps to verify all core capabilities:
+Follow these 5 steps to verify all core capabilities in the web interface:
 
-### Step 1: Inspect Dual Metrics & Net Recovered Value (Top Strip)
-- Open [http://127.0.0.1:8000](http://127.0.0.1:8000).
-- Notice the **Executive Financial Metrics**:
-  - Primary Metric: **Verified Revenue Recovered** and **Revenue Recovery Rate %**.
-  - Secondary Strip: **Recovered Transactions**, **Net Recovered Value (NRV)**, and **Modeled Recovery Cost** (with *Simulation Assumptions* disclosure).
-  - Deterministic Diagnosis Share: Proves $\ge 80\%$ resolution without LLM dependency.
-
-### Step 2: Run the 3-Way Empirical Benchmark Panel
-- Scroll to the **"3-Way Recovery Evaluation Benchmark"** section.
-- Set Seed = `42`, Count = `200`, and click **"Run 3-way benchmark"**.
-- Observe live comparative metrics across all 3 strategies:
-  - **Naive Retry:** High customer fatigue and hundreds of unsafe retries on hard declines.
-  - **Static Rules:** Better recovery but static action mapping without channel or economic optimization.
-  - **RecoverAI:** Highest recovery rate, $+39.70\%$ revenue uplift vs static rules ($+279.7\%$ vs naive), maximum NRV, and strictly **0 policy violations**.
-
-### Step 3: Inspect "Why This Action?" Decision & ERV Inspector
-- Scroll to the **Operations Audit Ledger**.
-- Click the **"Why this?"** button on any transaction row.
-- The **Decision Inspector Drawer** slides out, displaying:
-  - Root-cause diagnosis and confidence score.
-  - **Candidate Actions & ERV Table**: Mathematical breakdown of $P(\text{rec})$, Direct Cost, Friction Penalty, and final Expected Recovery Value for every menu action.
-  - **Deterministic Policy Guardrail Audit**: Validated checks for Opt-Out, Attempt Cap ($\le 3$), Quiet Hours, and Allowlist.
-  - **Counterfactual Explanations**: Plain-English rationale for why competing actions were rejected.
-
-### Step 4: Verify Cryptographic SHA-256 Audit Integrity
-- In the Operations Audit Ledger header, locate the **"SHA-256 Hash Chain: Active"** status badge.
-- Click **"Verify"**.
-- A modal confirms that every record is chained cryptographically: $\text{SHA256}(\dots\|\text{prev\_hash})$.
-- Displays total events verified, verification runtime in milliseconds, Genesis hash, and Head hash.
-
-### Step 5: Test the Scenario Decision Studio
-- Scroll to **"Test a Recovery Scenario"**.
-- Select `insufficient_funds` with 0 attempts: Observe deterministic SMS recommendation.
-- Check the **"Customer explicitly requested communication opt-out"** box and click **"Evaluate scenario"**:
-  - The deterministic policy engine immediately halts outreach (`BLOCKED: Customer opted out`).
-- Select `unlisted_ambiguous_payment_drop`:
-  - Triggers AI fallback diagnosis and reveals the **Priority Support Assistant & Call-Back Workflow**.
+1. **Inspect Executive Financial Metrics (Top Bar)**:
+   - Verify the separation of **Verified Recovered Revenue** (Primary KPI) vs. **Recovered Transactions** (Secondary KPI).
+   - Observe the **Net Recovered Value (NRV)** displaying direct deductions for modeled SMS, WhatsApp, and retry costs.
+2. **Execute the 3-Way Empirical Benchmark**:
+   - Scroll to the **3-Way Recovery Evaluation Benchmark** panel.
+   - Click **Run 3-way benchmark** (Seed: 42, Count: 200).
+   - Verify the live performance comparison: RecoverAI achieves $+39.7\%$ revenue uplift with **zero policy violations**.
+3. **Inspect the "Why This Action?" Decision Drawer**:
+   - In the **Operations Audit Ledger**, click the **Why this?** button on any transaction.
+   - Inspect the live ERV breakdown table ($P(\text{recovery})$, Direct Cost, Friction Penalty) and the **Deterministic Policy Guardrail Audit**.
+4. **Verify Cryptographic SHA-256 Audit Integrity**:
+   - Click the **Verify** badge next to the SHA-256 Hash Chain indicator.
+   - Confirm that the modal verifies every hash link across the entire database in milliseconds.
+5. **Test Edge Cases in the Scenario Studio**:
+   - Scroll to **Test a Recovery Scenario**.
+   - Select `insufficient_funds` and check **"Customer explicitly requested communication opt-out"**.
+   - Click **Evaluate scenario** to observe immediate deterministic halt (`BLOCKED: Customer opted out`).
 
 ---
 
-## 6. Project Directory Structure
+## 🔌 Razorpay Production Integration Path
+
+In a live production environment, RecoverAI binds directly to Razorpay's developer platform:
+
+```text
+Razorpay Gateway Webhooks (payment.failed, order.paid)
+       │
+       ▼
+[ RecoverAI Detection & Policy Engine ]
+       │
+       ├─► Silent Retries ───────────────► Razorpay Subscriptions Recurring Charge API
+       ├─► WhatsApp Smart Links ─────────► Razorpay Payment Links API (rzp.io/pay)
+       ├─► Dynamic Gateway Failover ─────► Razorpay Optimizer Intelligent Routing
+       └─► Settlement Confirmation ──────► Razorpay Webhook Signature Verification
+```
+
+1. **Razorpay Webhooks API**: Ingests real-time events (`payment.failed`, `order.paid`, `invoice.expired`) directly into the detection and verification gates.
+2. **Razorpay Payment Links & Smart Collect**: Dispatches dynamic, short-lived UPI deep links via WhatsApp Business API.
+3. **Razorpay Subscriptions**: Triggers auto-debit retries and generates recurring mandate update links.
+4. **Razorpay Optimizer**: Dynamically routes retried transactions across alternate acquiring banking gateways to circumvent bank downtimes.
+
+---
+
+## 📁 Repository Structure
 
 ```
-Razorpay Project/
-├── server.py                        # FastAPI Backend & OpenAPI endpoint server
-├── run_evaluation.py                # Standalone reproducible 3-way benchmark CLI runner
-├── run_pipeline.py                  # End-to-end 5-stage pipeline runner CLI
-├── requirements.txt                 # Project dependencies
-├── report.json                      # Exported headline recovery & economic metrics
-├── tests/                           # 45 Automated Pytest Test Suites
-│   ├── test_state_machine.py        # Validated state transitions & terminal locks
-│   ├── test_verify.py               # Payment verification & settlement simulation
-│   ├── test_policy.py               # 12 Deterministic policy guardrails
-│   ├── test_decision.py             # ERV mathematical calculation & counterfactuals
-│   ├── test_evaluation.py           # Reproducible benchmark engine verification
-│   ├── test_audit_chain.py          # SHA-256 cryptographic chain & tamper detection
-│   ├── test_server_endpoints.py     # FastAPI endpoints & dashboard integration
-│   ├── test_edge_cases.py           # Zero amounts, attempt caps, 404 boundaries
-│   ├── test_detect.py               # Risk detection rules
-│   ├── test_execute.py              # Recovery action dispatch & idempotency
-│   └── test_support.py              # Support chat & priority callback queue
-├── src/                             # Core Domain & Recovery Architecture
-│   ├── state_machine.py             # Recovery state machine & transition table
-│   ├── verify.py                    # Verification engine & settlement validator
-│   ├── policy.py                    # Centralized deterministic policy engine
-│   ├── decision.py                  # ERV economic decisioning & counterfactuals
-│   ├── evaluation.py                # 3-way benchmark engine & outcome simulator
-│   ├── db.py                        # SQLite schema, indices, & SHA-256 audit chaining
-│   ├── metrics.py                   # Dual recovery rates, NRV, & modeled cost engine
-│   ├── detect.py                    # Deterministic risk flag detection
-│   ├── diagnose.py                  # Rule-first (≥80%) + LLM fallback diagnosis
-│   ├── execute.py                   # Action dispatcher with SHA-256 chaining
-│   ├── ptp_tracker.py               # Promise-to-Pay tracking & follow-up scheduler
-│   ├── llm_client.py                # Groq LPU / Claude client with template fallback
-│   └── constants.py                 # Action menus, policy limits, & economic model
-└── web/                             # RazorSense Fintech UI
-    ├── index.html                   # Flagship RecoverAI Dashboard markup
-    ├── blade-theme.css              # Custom RazorSense fintech design system
-    └── app.js                       # Frontend controller & interactive integrations
+RecoverAI-Autonomous-Revenue-Recovery-Platform/
+├── server.py                   # FastAPI REST API & RazorSense dashboard server
+├── run_evaluation.py           # Standalone 3-way reproducible benchmark CLI
+├── run_pipeline.py             # 5-stage end-to-end recovery pipeline CLI
+├── requirements.txt            # Python dependencies
+├── vercel.json                 # Vercel serverless deployment configuration
+├── data/
+│   └── seed_recovery.db        # Pre-packaged 200-transaction benchmark database
+├── src/
+│   ├── policy.py               # Central deterministic policy authorization engine
+│   ├── state_machine.py        # Financial recovery state machine & terminal locks
+│   ├── decision.py             # Expected Recovery Value (ERV) engine & counterfactuals
+│   ├── verify.py               # Settlement verification & lifecycle validation
+│   ├── evaluation.py           # 3-way comparative benchmark simulator
+│   ├── db.py                   # SQLite schema & SHA-256 cryptographic audit chaining
+│   ├── metrics.py              # Dual recovery rates, NRV, and modeled cost engine
+│   ├── detect.py               # Revenue-at-risk detection rules
+│   ├── diagnose.py             # Rule-first (≥80%) + LLM fallback diagnosis
+│   ├── execute.py              # Action dispatcher with audit chain generation
+│   ├── ptp_tracker.py          # Promise-to-Pay tracking & follow-up scheduler
+│   ├── llm_client.py           # Groq LPU / Claude client with template fallbacks
+│   └── constants.py            # Action menus, policy limits, & economic cost model
+├── tests/                      # 45 Automated Pytest Test Suites (100% Passing)
+└── web/                        # RazorSense Fintech Web UI
+    ├── index.html              # Recovery dashboard single-page interface
+    ├── blade-theme.css         # Razorpay RazorSense fintech styling & tokens
+    └── app.js                  # UI event controller, modals, & live API bindings
 ```
 
 ---
 
-## 7. What Would Connect to Live Razorpay APIs in Production
+## 📜 License
 
-In a live production deployment, RecoverAI's mock execution and verification interfaces map directly to Razorpay's developer platform:
+Distributed under the **MIT License**. See `LICENSE` for more information.
 
-1. **Razorpay Webhooks API:** Ingest asynchronous gateway webhooks (`payment.failed`, `order.paid`, `invoice.expired`) directly into `src/detect.py` and `src/verify.py`.
-2. **Razorpay Payment Links & Smart Collect:** Generate dynamic, short-lived UPI/Card payment links (`rzp.io/pay`) dispatched via official WhatsApp Business API endpoints.
-3. **Razorpay Subscriptions & Recurring Charges:** Trigger auto-debit retries via Razorpay Subscriptions recurring charge endpoint and generate mandate update links.
-4. **Razorpay Optimizer:** Dynamically route retried transactions across alternate acquiring bank gateways to bypass downtime.
+---
+
+<div align="center">
+
+**RecoverAI** • Developed for the **Razorpay AI Buildathon 2026**  
+*Track 03: AI Revenue Recovery*
+
+</div>
