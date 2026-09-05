@@ -11,13 +11,13 @@
 **An autonomous, policy-bounded revenue recovery engine for Indian fintech, digital merchants, and SaaS platforms.**  
 *Recovers failed payments intelligently using Expected Recovery Value (ERV) optimization, strict deterministic guardrails, and cryptographic SHA-256 audit chaining.*
 
-[Architecture](#-core-architecture) • [3-Way Benchmark](#-empirical-3-way-benchmark) • [Quickstart](#-quickstart--installation) • [Evaluator Demo](#-evaluator-demo-script-2-3-minutes) • [Razorpay Integration](#-razorpay-production-integration-path)
+[Architecture](#core-architectural-innovations) • [3-Way Benchmark](#empirical-3-way-benchmark) • [Quickstart](#quickstart--installation) • [Evaluator Demo](#evaluator-demo-script-2-3-minutes) • [Razorpay Integration](#razorpay-production-integration-path)
 
 </div>
 
 ---
 
-## 📌 Executive Summary
+## Executive Summary
 
 Failed payments cost Indian digital businesses billions annually. Standard recovery systems rely on either **blunt naive retries** (which spam users and trigger fraud blocks) or **unconstrained AI agents** (which risk financial hallucinations and compliance violations).
 
@@ -29,7 +29,7 @@ In RecoverAI, Large Language Models (LLMs) have **zero direct execution authorit
 
 ---
 
-## ⚡ The 5-Stage Autonomous Recovery Pipeline
+## The 5-Stage Autonomous Recovery Pipeline
 
 ```text
 ┌──────────────┐     ┌──────────────┐     ┌──────────────┐     ┌──────────────┐     ┌──────────────┐
@@ -47,7 +47,7 @@ In RecoverAI, Large Language Models (LLMs) have **zero direct execution authorit
 
 ---
 
-## 🛡️ Core Architectural Innovations
+## Core Architectural Innovations
 
 ### 1. Deterministic Policy Guardrails (Zero Hallucinations)
 A single, immutable policy authorization gate (`src/policy.py`) intercepts every proposed action before execution:
@@ -85,7 +85,7 @@ RecoverAI strictly distinguishes financial recovery from operational volume:
 
 ---
 
-## 📊 Empirical 3-Way Benchmark
+## Empirical 3-Way Benchmark
 
 RecoverAI includes a fully reproducible evaluation benchmark (`run_evaluation.py`) running across **200 identical synthetic transactions** (Seed: `42`).
 
@@ -104,7 +104,7 @@ RecoverAI includes a fully reproducible evaluation benchmark (`run_evaluation.py
 
 ---
 
-## 🏗️ Architectural Boundaries: REAL vs. SIMULATED
+## Architectural Boundaries: REAL vs. SIMULATED
 
 Fintech systems require absolute clarity regarding production readiness:
 
@@ -123,7 +123,7 @@ Fintech systems require absolute clarity regarding production readiness:
 
 ---
 
-## 🚀 Quickstart & Installation
+## Quickstart & Installation
 
 ### Prerequisites
 - Python 3.11+
@@ -159,7 +159,7 @@ Open your browser to:
 
 ---
 
-## 🎯 Evaluator Demo Script (2–3 Minutes)
+## Evaluator Demo Script (2–3 Minutes)
 
 Follow these 5 steps to verify all core capabilities in the web interface:
 
@@ -183,7 +183,7 @@ Follow these 5 steps to verify all core capabilities in the web interface:
 
 ---
 
-## 🔌 Razorpay Production Integration Path
+## Razorpay Production Integration Path
 
 In a live production environment, RecoverAI binds directly to Razorpay's developer platform:
 
@@ -206,7 +206,7 @@ Razorpay Gateway Webhooks (payment.failed, order.paid)
 
 ---
 
-## 📁 Repository Structure
+## Repository Structure
 
 ```
 RecoverAI-Autonomous-Revenue-Recovery-Platform/
@@ -240,7 +240,7 @@ RecoverAI-Autonomous-Revenue-Recovery-Platform/
 
 ---
 
-## 📜 License
+## License
 
 Distributed under the **MIT License**. See `LICENSE` for more information.
 
