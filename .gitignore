@@ -1,0 +1,47 @@
+# ==============================================================================
+# RecoverAI — Git Ignore Rules
+# ==============================================================================
+
+# Python bytecode & cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual Environments
+.venv/
+venv/
+env/
+ENV/
+
+# Environment variables & secrets (CRITICAL: NEVER COMMIT REAL SECRETS)
+.env
+.env.*
+!.env.example
+
+# Local SQLite databases & journals
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+recovery.db
+recovery.db-journal
+
+# Logs & temporary run files
+*.log
+scratch/
+.system_generated/
+
+# Large generated datasets (preserve folder structure via .gitkeep)
+data/*.csv
+!data/.gitkeep
+
+# IDE & OS files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+.streamlit/secrets.toml

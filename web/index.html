@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RecoverAI — Autonomous Revenue Recovery Platform | Razorpay AI Buildathon 2026</title>
+  
+  <!-- Cache Control Meta Tags -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  
+  <!-- Chart.js for clean financial data visualization -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  
+  <!-- Modern Fintech Design System -->
+  <link rel="stylesheet" href="/static/blade-theme.css?v=20260905_v10" />
+</head>
+<body>
+
+  <!-- Modern Fintech Navigation Bar -->
+  <header>
+    <nav class="navbar" aria-label="Primary Navigation">
+      <div class="nav-left">
+        <a href="#" class="nav-brand" title="RecoverAI Autonomous Revenue Recovery Platform">
+          <div class="brand-logo-wrap">
+            <!-- Proprietary Geometric Recovery Loop Glyph -->
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M4 12C4 7.58172 7.58172 4 12 4C15.1953 4 17.9622 5.87321 19.2458 8.57945" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M20 12C20 16.4183 16.4183 20 12 20C8.80467 20 6.0378 18.1268 4.75417 15.4206" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M19 4V9H14" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M5 20V15H10" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <span class="brand-name">Recover<span>AI</span></span>
+        </a>
+
+        <div class="nav-links">
+          <a href="#sectionOverview" class="nav-link active">Overview</a>
+          <a href="#sectionBenchmark" class="nav-link">3-Way Benchmark</a>
+          <a href="#sectionWorkflow" class="nav-link">Recovery Pipeline</a>
+          <a href="#sectionIntelligence" class="nav-link">Intelligence</a>
+          <a href="#sectionStudio" class="nav-link">Scenario Studio</a>
+          <a href="#sectionLedger" class="nav-link">Operations Ledger</a>
+        </div>
+      </div>
+
+      <div class="nav-right">
+        <!-- Live System Status -->
+        <div class="nav-status-chip">
+          <span class="status-dot-live"></span>
+          <span id="navLlmStatus">Automation Active • Groq LPU Connected</span>
+        </div>
+
+        <a href="/docs" target="_blank" class="btn-nav-secondary" title="Open Interactive OpenAPI Explorer">
+          <span class="material-symbols-outlined" style="font-size: 16px;">api</span>
+          <span>API Docs</span>
+        </a>
+
+        <button id="btnRunPipeline" class="btn-nav-primary">
+          <span class="material-symbols-outlined" style="font-size: 18px;">play_arrow</span>
+          <span>Run live recovery</span>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Main Layout -->
+  <main class="main-wrapper" id="sectionOverview">
+
+    <!-- Editorial Header Hero -->
+    <section class="editorial-hero">
+      <div class="hero-title-group">
+        <span class="hero-tag">Track 03 • AI Revenue Recovery</span>
+        <h1 class="hero-headline">Revenue recovery, automated</h1>
+        <p class="hero-subtitle">
+          Autonomous financial operations engine that detects failed payments, diagnoses root causes, and executes bounded customer recovery with ≥80% deterministic precision.
+        </p>
+      </div>
+
+      <!-- Secondary Demo / Batch Controls (De-emphasized, non-terminal) -->
+      <div class="context-control-strip">
+        <div class="control-inputs">
+          <div class="control-item">
+            <label for="sliderBatchSize">Batch size:</label>
+            <input type="range" id="sliderBatchSize" class="slider-subtle" min="150" max="300" step="10" value="200" />
+            <strong id="lblBatchSize" style="font-family: var(--font-mono); font-size: 0.82rem; color: var(--text-primary);">200</strong>
+          </div>
+          <div class="control-item">
+            <label for="inputSeed">Seed:</label>
+            <input type="number" id="inputSeed" class="input-seed-subtle" value="42" min="1" max="9999" />
+          </div>
+        </div>
+        <div class="control-badge-verified">
+          <span class="material-symbols-outlined" style="font-size: 16px;">verified</span>
+          <span id="pipelineStatus">Evaluated on live transaction batch</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Executive Financial Metrics Grid (Primary Financial KPIs) -->
+    <section class="metrics-grid" aria-label="Executive Financial Summary">
+      <!-- Metric 1: Revenue at Risk -->
+      <div class="metric-card">
+        <div class="metric-header">
+          <span class="metric-title">Revenue at risk</span>
+          <span class="metric-trend trend-neutral">
+            <span class="material-symbols-outlined" style="font-size: 14px;">warning</span>
+            <span>Flagged</span>
+          </span>
+        </div>
+        <div class="metric-value" id="kpiRevenueAtRisk">₹0</div>
+        <div class="metric-footer">
+          <span id="kpiAtRiskCount">0 of 200</span>
+          <span>transactions requiring action</span>
+        </div>
+      </div>
+
+      <!-- Metric 2: Verified Recovered Revenue (Primary Financial KPI) -->
+      <div class="metric-card">
+        <div class="metric-header">
+          <span class="metric-title">Verified revenue recovered</span>
+          <span class="metric-trend trend-green">
+            <span class="material-symbols-outlined" style="font-size: 14px;">trending_up</span>
+            <span>Verified</span>
+          </span>
+        </div>
+        <div class="metric-value" id="kpiRevenueRecovered" style="color: var(--emerald-main);">₹0</div>
+        <div class="metric-footer">
+          <strong id="kpiRecoveredCount" style="color: var(--text-primary);">0</strong>
+          <span>verified payment settlements</span>
+        </div>
+      </div>
+
+      <!-- Metric 3: Revenue Recovery Rate (Primary Business Metric) -->
+      <div class="metric-card">
+        <div class="metric-header">
+          <span class="metric-title">Revenue recovery rate</span>
+          <span class="metric-trend trend-green">
+            <span class="material-symbols-outlined" style="font-size: 14px;">analytics</span>
+            <span>Primary KPI</span>
+          </span>
+        </div>
+        <div class="metric-value" id="kpiRecoveryRate">0.0%</div>
+        <div class="metric-footer">
+          <span id="kpiUpliftTag" class="badge-tag badge-green" style="display:none; font-size: 0.68rem;">+27.4% Uplift</span>
+          <span id="kpiRecoveryRateSub">Verified / At-Risk Revenue</span>
+        </div>
+      </div>
+
+      <!-- Metric 4: Deterministic Diagnosis Share (Governance) -->
+      <div class="metric-card">
+        <div class="metric-header">
+          <span class="metric-title">Deterministic diagnosis</span>
+          <span class="metric-trend trend-neutral">
+            <span class="material-symbols-outlined" style="font-size: 14px;">psychology</span>
+            <span>Governance</span>
+          </span>
+        </div>
+        <div class="metric-value" id="kpiRulePercent">80.0% Rules</div>
+        <div>
+          <div class="dual-tone-bar">
+            <div class="bar-segment-rule" id="barRules" style="width: 80%;"></div>
+            <div class="bar-segment-llm" id="barLlm" style="width: 20%;"></div>
+          </div>
+          <div class="metric-footer" style="justify-content: space-between;">
+            <span><strong id="kpiRuleCount">48</strong> Rules</span>
+            <span><strong id="kpiLlmCount">12</strong> AI Fallback</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Secondary Financial & Operational Strip (PRD / Correction 1 & 11) -->
+    <section class="secondary-metrics-strip" aria-label="Secondary Financial and Operational Summary">
+      <div class="sec-metric-item">
+        <span class="sec-metric-label">
+          <span class="material-symbols-outlined" style="font-size: 14px;">receipt_long</span>
+          <span>Recovered Transactions</span>
+        </span>
+        <div class="sec-metric-value" id="kpiTxnRecoveredCount">0</div>
+        <div class="sec-metric-sub">
+          <span id="kpiTxnRecoveryRate">0.0%</span> txn recovery rate
+        </div>
+      </div>
+
+      <div class="sec-metric-item">
+        <span class="sec-metric-label">
+          <span class="material-symbols-outlined" style="font-size: 14px; color: var(--emerald-main);">payments</span>
+          <span>Net Recovered Value (NRV)</span>
+        </span>
+        <div class="sec-metric-value" id="kpiNetRecoveredValue" style="color: var(--emerald-main);">₹0</div>
+        <div class="sec-metric-sub">Gross Recovered − Recovery Costs</div>
+      </div>
+
+      <div class="sec-metric-item">
+        <span class="sec-metric-label">
+          <span class="material-symbols-outlined" style="font-size: 14px;">savings</span>
+          <span>Modeled Recovery Cost</span>
+        </span>
+        <div class="sec-metric-value" id="kpiModeledCost">₹0.00</div>
+        <div class="sec-metric-sub">
+          <span class="badge-tag badge-slate" style="font-size: 0.66rem;" title="Modeled simulation friction: SMS ₹0.15, WhatsApp ₹0.40, Silent Retry ₹0.02, LLM Fallback ₹0.05, Support Escalation ₹12.00">Simulation Assumptions ℹ️</span>
+        </div>
+      </div>
+
+      <div class="sec-metric-item">
+        <span class="sec-metric-label">
+          <span class="material-symbols-outlined" style="font-size: 14px;">repeat</span>
+          <span>Avg Contact Attempts</span>
+        </span>
+        <div class="sec-metric-value" id="kpiAvgAttempts">1.0</div>
+        <div class="sec-metric-sub">Policy bound: Max 3-contact cap</div>
+      </div>
+    </section>
+
+    <!-- Section: 3-Way Comparative Evaluation Benchmark (Phase 5 & 8) -->
+    <section class="benchmark-section" id="sectionBenchmark" aria-label="3-Way Empirical Benchmark Evaluation">
+      <div class="section-header-row" style="margin-bottom: 0;">
+        <div class="section-heading-group">
+          <span class="hero-tag" style="background: var(--brand-blue-subtle); color: var(--brand-blue); border: 1px solid var(--brand-blue-border); font-size: 0.7rem; padding: 2px 8px; border-radius: 4px; margin-bottom: 4px; display: inline-block;">Empirical Baseline Comparison</span>
+          <h2 class="section-title">3-Way recovery evaluation benchmark</h2>
+          <p class="section-subtext">Reproducible evaluation across identical random seeds comparing Naive Retry, Static Rules, and RecoverAI Autonomous Decisioning.</p>
+        </div>
+        <span class="badge-tag badge-green">Deterministic Benchmark Engine</span>
+      </div>
+
+      <!-- Benchmark Control Strip -->
+      <div class="benchmark-control-strip">
+        <div class="control-inputs" style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
+          <div class="control-item">
+            <label for="inputBenchSeed" style="font-size: 0.78rem; font-weight: 600; color: var(--text-secondary);">Benchmark seed:</label>
+            <input type="number" id="inputBenchSeed" class="input-seed-subtle" value="42" min="1" max="9999" style="width: 70px;" />
+          </div>
+          <div class="control-item">
+            <label for="sliderBenchCount" style="font-size: 0.78rem; font-weight: 600; color: var(--text-secondary);">Failed transactions:</label>
+            <input type="range" id="sliderBenchCount" class="slider-subtle" min="50" max="300" step="10" value="200" />
+            <strong id="lblBenchCount" style="font-family: var(--font-mono); font-size: 0.82rem; color: var(--text-primary);">200</strong>
+          </div>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span id="benchStatus" style="font-size: 0.76rem; color: var(--text-muted);">Ready to run benchmark</span>
+          <button id="btnRunBenchmark" class="btn-nav-primary" style="padding: 8px 16px; font-size: 0.82rem;">
+            <span class="material-symbols-outlined" style="font-size: 16px;">compare_arrows</span>
+            <span>Run 3-way benchmark</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 3-Column Comparative Cards -->
+      <div class="benchmark-cards-grid">
+        <!-- Baseline 1: Naive Retry -->
+        <div class="bench-card">
+          <div class="bench-tag-row">
+            <div class="bench-title">Naive Auto-Retry</div>
+            <span class="badge-tag badge-slate">Baseline 1 • Unbounded</span>
+          </div>
+          <div class="bench-desc">
+            Blind technical retry on all failures without root cause diagnosis, channel adaptation, or compliance cap.
+          </div>
+          <div class="bench-kpis-list">
+            <div class="bench-kpi-row">
+              <span class="bench-kpi-label">Revenue Recovery Rate</span>
+              <span class="bench-kpi-value" id="benchNaiveRevRate">28.2%</span>
+            </div>
+            <div class="bench-kpi-row">
+              <span class="bench-kpi-label">Transaction Recovery Rate</span>
+              <span class="bench-kpi-value" id="benchNaiveTxnRate">28.5%</span>
+            </div>
+            <div class="bench-kpi-row">
+              <span class="bench-kpi-label">Net Recovered Value</span>
+              <span class="bench-kpi-value" id="benchNaiveNRV">₹5.61L</span>
+            </div>
+            <div class="bench-alert-box">
+              <span style="font-size: 0.74rem; font-weight: 600; color: var(--coral-text);">Unsafe Actions / Fatigue</span>
+              <span style="font-size: 0.76rem; font-weight: 700; color: var(--coral-text);" id="benchNaiveViolations">334 Unsafe Retries</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Baseline 2: Static Rules -->
+        <div class="bench-card">
+          <div class="bench-tag-row">
+            <div class="bench-title">Static Rule-Based</div>
+            <span class="badge-tag badge-slate">Baseline 2 • Fixed Rules</span>
+          </div>
+          <div class="bench-desc">
+            Hardcoded code-to-action lookup table with standard 3-attempt contact caps and opt-out checks.
+          </div>
+          <div class="bench-kpis-list">
+            <div class="bench-kpi-row">
+              <span class="bench-kpi-label">Revenue Recovery Rate</span>
+              <span class="bench-kpi-value" id="benchStaticRevRate">58.0%</span>
+            </div>
+            <div class="bench-kpi-row">
+              <span class="bench-kpi-label">Transaction Recovery Rate</span>
+              <span class="bench-kpi-value" id="benchStaticTxnRate">59.0%</span>
+            </div>
+            <div class="bench-kpi-row">
+              <span class="bench-kpi-label">Net Recovered Value</span>
+              <span class="bench-kpi-value" id="benchStaticNRV">₹11.58L</span>
+            </div>
+            <div style="background: var(--bg-surface-subtle); border-radius: var(--radius-sm); padding: 8px 12px; display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-size: 0.74rem; color: var(--text-muted);">Policy Blocked Actions</span>
+              <span style="font-size: 0.76rem; font-weight: 600; color: var(--text-secondary);" id="benchStaticBlocked">21 Blocked</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- RecoverAI -->
+        <div class="bench-card featured">
+          <div class="bench-badge-featured">Optimal Architecture</div>
+          <div class="bench-tag-row">
+            <div class="bench-title">RecoverAI Platform</div>
+            <span class="badge-tag badge-green">AI + Policy Bounds</span>
+          </div>
+          <div class="bench-desc">
+            ERV economic decisioning, channel awareness, deterministic policy authorization, and verified state machine.
+          </div>
+          <div class="bench-kpis-list">
+            <div class="bench-kpi-row">
+              <span class="bench-kpi-label">Revenue Recovery Rate</span>
+              <span class="bench-kpi-value text-emerald" id="benchRecoverAiRevRate">74.0%</span>
+            </div>
+            <div class="bench-kpi-row">
+              <span class="bench-kpi-label">Transaction Recovery Rate</span>
+              <span class="bench-kpi-value text-emerald" id="benchRecoverAiTxnRate">74.0%</span>
+            </div>
+            <div class="bench-kpi-row">
+              <span class="bench-kpi-label">Net Recovered Value</span>
+              <span class="bench-kpi-value text-emerald" id="benchRecoverAiNRV">₹14.75L</span>
+            </div>
+            <div class="bench-highlight-box">
+              <span style="font-size: 0.74rem; font-weight: 600; color: var(--emerald-text);">Measured Uplift vs Static</span>
+              <span style="font-size: 0.8rem; font-weight: 800; color: var(--emerald-text);" id="benchRecoverAiUplift">+27.43%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: 16px; font-size: 0.74rem; color: var(--text-muted); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+        <div>
+          ℹ️ Evaluated live via <code style="font-family: var(--font-mono);">BenchmarkEngine</code> with realistic outcome modeling. Zero hardcoded winning numbers.
+        </div>
+        <div style="font-family: var(--font-mono); color: var(--text-secondary);">
+          CLI equivalent: <code style="background: var(--bg-canvas); padding: 2px 6px; border-radius: 3px;">python run_evaluation.py --seed 42 --count 200</code>
+        </div>
+      </div>
+    </section>
+
+    <!-- Automated Recovery Workflow (Visual Journey) -->
+    <section class="workflow-section" id="sectionWorkflow" aria-label="Autonomous Recovery Pipeline">
+      <div class="section-header-row">
+        <div class="section-heading-group">
+          <h2 class="section-title">Autonomous recovery lifecycle</h2>
+          <p class="section-subtext">5-stage pipeline executing deterministic detection, root-cause diagnosis, bounded outreach, and financial reconciliation.</p>
+        </div>
+        <span class="workflow-status-badge">Bounded Execution & Compliance</span>
+      </div>
+
+      <div class="workflow-track">
+        <!-- Step 01 -->
+        <div id="step1" class="workflow-step-card completed">
+          <div>
+            <div class="step-num-tag">Stage 01</div>
+            <div class="step-title">Detect</div>
+            <div class="step-desc">Deterministic rules identify abandoned checkouts & failure drops.</div>
+          </div>
+          <div class="step-metric-chip" id="step1Metric">69 Flags Found</div>
+        </div>
+
+        <!-- Step 02 -->
+        <div id="step2" class="workflow-step-card completed">
+          <div>
+            <div class="step-num-tag">Stage 02</div>
+            <div class="step-title">Diagnose</div>
+            <div class="step-desc">80/20 root cause split: known codes mapped, anomalies to Groq LPU.</div>
+          </div>
+          <div class="step-metric-chip" id="step2Metric">80% Rule Lookup</div>
+        </div>
+
+        <!-- Step 03 -->
+        <div id="step3" class="workflow-step-card completed">
+          <div>
+            <div class="step-num-tag">Stage 03</div>
+            <div class="step-title">Recover</div>
+            <div class="step-desc">Bounded execution enforces max 3-attempt caps and immediate opt-out halts.</div>
+          </div>
+          <div class="step-metric-chip" id="step3Metric">4 Compliance Halts</div>
+        </div>
+
+        <!-- Step 04 -->
+        <div id="step4" class="workflow-step-card completed">
+          <div>
+            <div class="step-num-tag">Stage 04</div>
+            <div class="step-title">Follow up</div>
+            <div class="step-desc">Promise-to-Pay tracking reconciles customer payment links & webhooks.</div>
+          </div>
+          <div class="step-metric-chip" id="step4Metric">5 Recovered</div>
+        </div>
+
+        <!-- Step 05 -->
+        <div id="step5" class="workflow-step-card completed">
+          <div>
+            <div class="step-num-tag">Stage 05</div>
+            <div class="step-title">Measure</div>
+            <div class="step-desc">Financial audit logs reconciled into tamper-evident report.json.</div>
+          </div>
+          <div class="step-metric-chip" id="step5Metric">Audit Ledger Sync</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 4: Recovery Intelligence -->
+    <section class="intelligence-section" id="sectionIntelligence" aria-label="Recovery Intelligence">
+      <div class="section-heading-group">
+        <h2 class="section-title">How RecoverAI makes decisions</h2>
+        <p class="section-subtext">Defensive architecture prioritizing deterministic rules (≥80%) before invoking Groq AI.</p>
+      </div>
+
+      <div class="analytics-split-view">
+        <!-- Donut Chart -->
+        <div>
+          <div class="donut-wrapper">
+            <canvas id="donutSplitChart"></canvas>
+            <div class="donut-center-stat">
+              <span class="donut-stat-val" id="donutCenterPct">80%</span>
+              <span class="donut-stat-sub">Rules</span>
+            </div>
+          </div>
+          <div style="font-size: 0.78rem; color: var(--text-muted); text-align: center; margin-top: 10px;">
+            Target: ≥80% Deterministic Rule Engine
+          </div>
+        </div>
+
+        <!-- Failure Code Breakdown -->
+        <div>
+          <div style="font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.04em;">
+            Recovery by failure reason
+          </div>
+          <div class="failure-breakdown-table" id="failureBreakdownList">
+            <!-- Populated dynamically by app.js -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 5: Scenario Decision Studio -->
+    <section class="studio-section" id="sectionStudio" aria-label="Scenario Decision Studio">
+      <div class="section-header-row" style="margin-bottom: 0;">
+        <div class="section-heading-group">
+          <h2 class="section-title">Test a recovery scenario</h2>
+          <p class="section-subtext">Simulate payment failure conditions and inspect autonomous agent decisions.</p>
+        </div>
+        <span class="badge-tag badge-blue">Interactive Test</span>
+      </div>
+
+      <div class="studio-split-grid">
+        <!-- Left: Input Form -->
+        <div class="studio-form-col">
+          <div class="studio-pane-title">
+            <span class="material-symbols-outlined" style="font-size: 16px; color: var(--brand-blue);">tune</span>
+            <span>Scenario parameters</span>
+          </div>
+          <div class="scenario-form-grid">
+            <div class="form-group">
+              <label class="form-label" for="sbxFailureCode">Failure reason</label>
+              <select id="sbxFailureCode" class="form-select">
+                <option value="insufficient_funds">insufficient_funds (Rule: SMS Reminder)</option>
+                <option value="bank_declined">bank_declined (Rule: Alternate Method)</option>
+                <option value="gateway_timeout">gateway_timeout (Rule: Silent Retry)</option>
+                <option value="card_expired">card_expired (Rule: Update Card Link)</option>
+                <option value="mandate_expired">mandate_expired (Rule: Mandate Link)</option>
+                <option value="otp_timeout">otp_timeout (Rule: Silent Retry)</option>
+                <option value="unknown_gateway_anomaly">unknown_anomaly (AI Fallback)</option>
+                <option value="unlisted_ambiguous_payment_drop">unlisted_drop (Human Escalation & Support)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="sbxAmount">Transaction amount (₹)</label>
+              <input type="number" id="sbxAmount" class="form-input" value="3499.00" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="sbxCustomer">Customer name</label>
+              <input type="text" id="sbxCustomer" class="form-input" value="Rohan Verma" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="sbxAttempts">Previous attempts</label>
+              <select id="sbxAttempts" class="form-select">
+                <option value="0">0 (First outreach attempt)</option>
+                <option value="1">1 attempt</option>
+                <option value="2">2 attempts</option>
+                <option value="3">3 attempts (At Cap)</option>
+                <option value="4">4 attempts (Exceeds Cap)</option>
+              </select>
+            </div>
+
+            <label class="checkbox-row" for="sbxOptOut">
+              <input type="checkbox" id="sbxOptOut" />
+              <span>Customer explicitly requested communication opt-out (Stops outreach immediately)</span>
+            </label>
+
+            <button id="btnTestSandbox" class="btn-evaluate">
+              <span class="material-symbols-outlined" style="font-size: 16px;">play_arrow</span>
+              <span>Evaluate scenario</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Right: Evaluated Outcome -->
+        <div class="studio-outcome-col">
+          <div class="studio-pane-title">
+            <span class="material-symbols-outlined" style="font-size: 16px; color: var(--emerald-main);">psychology</span>
+            <span>Autonomous decision outcome</span>
+          </div>
+
+          <div class="decision-meta-row">
+            <div>
+              <span style="font-size: 0.74rem; color: var(--text-muted); margin-right: 6px;">Recommended action:</span>
+              <span class="badge-tag badge-blue" id="resActionBadge">send_reminder_sms</span>
+            </div>
+            <span class="badge-tag badge-green" id="resSourceBadge">Deterministic rule engine</span>
+          </div>
+
+          <!-- Compliance Verdict Note -->
+          <div id="sbxComplianceNote" class="compliance-statement">
+            Compliance check passed: Outreach permitted within 3-attempt cap.
+          </div>
+
+          <!-- Human Escalation Banner -->
+          <div id="sbxEscalationBanner" class="escalation-cta-card" style="display: none;">
+            <span class="material-symbols-outlined" style="color: var(--amber-main); font-size: 20px;">support_agent</span>
+            <div>
+              <div style="font-size: 0.84rem; font-weight: 700; color: var(--amber-text);">Human Escalation Triggered</div>
+              <div style="font-size: 0.78rem; color: var(--text-secondary); margin-top: 2px;">
+                This scenario requires human intervention. Test how customers experience the AI Priority Support & Instant Call-Back workflow.
+              </div>
+              <button id="btnOpenSupportFromSandbox" class="btn-escalate-action">
+                <span class="material-symbols-outlined" style="font-size: 15px;">headset_mic</span>
+                <span>Open Priority Support Assistant</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Outreach Message Preview -->
+          <div class="outreach-preview-container">
+            <div class="preview-header">
+              <span>Customer outreach preview</span>
+              <div class="lang-switch">
+                <button id="btnLangHinglish" class="lang-btn active">Hinglish</button>
+                <button id="btnLangEnglish" class="lang-btn">English</button>
+              </div>
+            </div>
+            <div class="message-bubble-human" id="phoneBubbleText">
+              Hi Rohan, aapka ₹3,499 ka payment bank issue ki wajah se complete nahi ho paya. Please check your account & retry here: rzp.io/pay
+            </div>
+            <div class="preview-footer-meta">
+              <span>Delivered via WhatsApp & SMS</span>
+              <span id="phoneCharCount">128 / 300 chars</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Operations Audit Ledger (Clean Fintech Table) -->
+    <section class="audit-section" id="sectionLedger" aria-label="Operations Audit Ledger">
+      <div class="section-header-row" style="margin-bottom: 0;">
+        <div class="section-heading-group">
+          <h2 class="section-title">Operations audit ledger</h2>
+          <p class="section-subtext">Tamper-evident append-only ledger of automated recovery actions, policy checks, and customer touchpoints.</p>
+        </div>
+
+        <div class="table-controls-row">
+          <div class="filter-tab-pills">
+            <button class="tab-btn active" data-filter="all">All activity</button>
+            <button class="tab-btn" data-filter="compliance">Compliance stops</button>
+            <button class="tab-btn" data-filter="silent">Silent retries</button>
+          </div>
+
+          <div class="audit-integrity-bar">
+            <span class="material-symbols-outlined" id="auditIntegrityIcon" style="color: var(--emerald-main); font-size: 16px;">verified_user</span>
+            <span id="auditIntegrityLabel">SHA-256 Hash Chain: Active</span>
+            <button id="btnVerifyIntegrity" class="btn-verify-integrity" title="Cryptographically verify canonical hash chain">Verify</button>
+          </div>
+
+          <div class="search-input-wrap">
+            <span class="material-symbols-outlined" style="font-size: 16px; color: var(--text-muted);">search</span>
+            <input type="text" id="inputSearch" placeholder="Search customer, tx ID..." />
+          </div>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table class="audit-table">
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>Transaction ID</th>
+              <th>Customer</th>
+              <th class="text-right">Amount</th>
+              <th>Failure reason</th>
+              <th>Action dispatched</th>
+              <th>Channel</th>
+              <th>Status</th>
+              <th style="text-align: center;">Decision Rationale</th>
+              <th style="width: 32px; text-align: center;"></th>
+            </tr>
+          </thead>
+          <tbody id="auditTableBody">
+            <!-- Populated dynamically by app.js -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Product Footer -->
+    <footer class="product-footer">
+      <div>
+        <strong>RecoverAI</strong> — Autonomous Revenue Recovery Agent | Track 03: AI Revenue Recovery
+      </div>
+      <div>
+        Built for Razorpay AI Buildathon 2026 | <a href="/docs" target="_blank">Swagger OpenAPI Explorer</a>
+      </div>
+    </footer>
+
+  </main>
+
+  <!-- Floating Priority Help & Escalation Pill -->
+  <div id="supportFloatingPill" class="support-floating-pill" role="button" tabindex="0" title="Need Help with Payment? Click to Chat or Request Call Back">
+    <span class="support-live-indicator"></span>
+    <span class="material-symbols-outlined" style="color: var(--text-primary); font-size: 20px;">support_agent</span>
+    <div class="pill-text-group">
+      <span class="pill-title">24x7 Help Center</span>
+      <span class="pill-sub">Chat & Call Back</span>
+    </div>
+    <span class="pill-badge">Priority</span>
+  </div>
+
+  <!-- Slide-Out Support Drawer Backdrop & Panel -->
+  <div id="supportDrawerBackdrop" class="support-drawer-backdrop"></div>
+  
+  <aside id="supportDrawer" class="support-drawer" aria-label="Customer Support and Escalation Center">
+    <!-- Drawer Header -->
+    <div class="drawer-header">
+      <div class="drawer-header-info">
+        <div class="drawer-avatar-icon">
+          <span class="material-symbols-outlined" style="font-size: 22px;">headset_mic</span>
+        </div>
+        <div class="drawer-title-box">
+          <div class="drawer-title-main">Payment Support Assistant</div>
+          <div class="drawer-title-sub">
+            <span class="status-dot-live" style="width: 6px; height: 6px;"></span>
+            <span id="drawerLlmIndicator">Online • Powered by Groq AI</span>
+          </div>
+        </div>
+      </div>
+      <div class="drawer-top-actions">
+        <a href="tel:18001237729" class="btn-helpline-tag" title="Direct Dial Razorpay Support">
+          <span class="material-symbols-outlined" style="font-size: 15px;">call</span>
+          <span>1800-123-7729</span>
+        </a>
+        <button id="btnCloseSupportDrawer" class="btn-drawer-close" aria-label="Close Support Drawer">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Quick Question Chips -->
+    <div class="drawer-chips-wrap">
+      <button class="chip-pill" data-query="Paisa kat gaya par status failed dikha raha hai. Kya karu?">
+        💸 Paisa kat gaya
+      </button>
+      <button class="chip-pill" data-query="Bank ne payment decline kyu kiya? Main kaise pay karu?">
+        ⚠️ Bank Decline
+      </button>
+      <button class="chip-pill" data-query="Refund status kaise check karein? Kitna time lagega?">
+        🔄 Refund Status
+      </button>
+      <button class="chip-pill chip-pill-primary" id="btnChipCallback" data-query="Mujhe customer support executive se phone par baat karni hai. Call back chahiye.">
+        📞 Request Call Back
+      </button>
+      <button class="chip-pill" data-query="Mera issue list me nahi hai, mujhe human assistance chahiye.">
+        ❓ Unlisted Issue
+      </button>
+    </div>
+
+    <!-- Chat Messages Area -->
+    <div class="drawer-chat-area" id="drawerChatBody">
+      <!-- Welcome Message -->
+      <div class="chat-bubble-row bubble-assistant">
+        <div class="bubble-content">
+          <div style="font-size: 0.72rem; font-weight: 700; color: var(--text-muted); margin-bottom: 2px;">Support Assistant</div>
+          Namaste! 🙏 Welcome to 24x7 Payment Support. Agar aapka payment fail hua hai, account se paise kat gaye hain, ya koi unlisted issue hai — main turant help karunga.
+          <br><br>
+          Agar aap support specialist se phone par baat karna chahte hain, toh aap direct <strong>"Request Call Back"</strong> select kar sakte hain!
+          <div style="font-size: 0.68rem; color: var(--text-muted); text-align: right; margin-top: 4px;">Just now</div>
+        </div>
+      </div>
+
+      <!-- Request Call Back Card -->
+      <div id="callbackCardContainer" style="display: none;">
+        <div class="callback-flow-card">
+          <div class="callback-card-title">
+            <span class="material-symbols-outlined" style="color: var(--amber-main);">phone_in_talk</span>
+            <span>Demo Callback Workflow</span>
+          </div>
+          <p style="font-size: 0.78rem; color: var(--text-secondary);">
+            Simulated callback queue: Demonstrates priority agent routing in simulation mode.
+          </p>
+
+          <form id="formCallback" style="display: flex; flex-direction: column; gap: 8px;">
+            <input type="hidden" id="cbIssueSummary" value="Customer requested priority support callback" />
+            <div class="form-group">
+              <label class="form-label" style="font-size: 0.74rem;">Customer Name</label>
+              <input type="text" id="cbCustomerName" class="form-input" value="Rohan Verma" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label" style="font-size: 0.74rem;">Phone Number</label>
+              <input type="tel" id="cbPhone" class="form-input" value="+91 98765 43210" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label" style="font-size: 0.74rem;">Preferred Slot</label>
+              <select id="cbSlot" class="form-select">
+                <option value="Within 5 mins">⚡ As soon as possible (Within 5 mins)</option>
+                <option value="15-30 mins">In 15–30 minutes</option>
+                <option value="Today Evening">Today Evening (6 PM - 8 PM)</option>
+              </select>
+            </div>
+            <button type="submit" id="btnSubmitCallback" class="btn-submit-callback">
+              Schedule Priority Call Back
+            </button>
+          </form>
+
+          <!-- Live Timer Display -->
+          <div id="cbTimerCountdown" class="callback-countdown-display" style="display: none;">
+            <div style="font-size: 0.74rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em;">Estimated Specialist Call In</div>
+            <div class="countdown-timer-text" id="cbTimerDigits">04:59</div>
+            <div style="font-size: 0.74rem; color: var(--text-secondary); margin-top: 2px;">
+              Ref: <span id="cbTicketRef" style="font-family: var(--font-mono); font-weight: 600;">RZP-TKT-XXXX</span>
+            </div>
+            <button type="button" id="btnCancelCallback" style="margin-top: 8px; padding: 4px 10px; background: transparent; border: 1px solid var(--border-medium); border-radius: 4px; font-size: 0.74rem; cursor: pointer;">
+              Cancel Call Back
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Typing Indicator -->
+      <div id="chatTypingIndicator" class="chat-bubble-row bubble-assistant" style="display: none;">
+        <div class="bubble-content" style="display: flex; gap: 4px; align-items: center; padding: 8px 14px;">
+          <span style="font-size: 0.78rem; color: var(--text-muted);">Groq AI is typing...</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Drawer Footer Input -->
+    <div class="drawer-input-footer">
+      <form id="drawerChatForm" class="drawer-form-row">
+        <input 
+          type="text" 
+          id="inputChatMessage" 
+          class="chat-text-input" 
+          placeholder="Ask in Hindi, Hinglish or English..." 
+          autocomplete="off" 
+          required 
+        />
+        <button type="button" id="btnQuickCallbackTrigger" class="btn-nav-secondary" style="padding: 8px 10px;" title="Request Call Back Form">
+          <span class="material-symbols-outlined" style="font-size: 16px;">call</span>
+        </button>
+        <button type="submit" id="btnSendChatMessage" class="btn-send-chat" title="Send Message">
+          <span class="material-symbols-outlined" style="font-size: 16px;">send</span>
+        </button>
+      </form>
+    </div>
+  </aside>
+
+  <!-- Slide-Out Decision Inspector Drawer Backdrop & Panel (Phase 8) -->
+  <div id="decisionDrawerBackdrop" class="support-drawer-backdrop"></div>
+  
+  <aside id="decisionDrawer" class="decision-drawer" aria-label="Why This Action? Decision Inspector">
+    <!-- Drawer Header -->
+    <div class="drawer-header">
+      <div class="drawer-header-info">
+        <div class="drawer-avatar-icon" style="background: var(--brand-blue-subtle); color: var(--brand-blue);">
+          <span class="material-symbols-outlined" style="font-size: 22px;">psychology</span>
+        </div>
+        <div class="drawer-title-box">
+          <div class="drawer-title-main">Why This Action? — Decision Inspector</div>
+          <div class="drawer-title-sub" style="color: var(--text-muted); font-size: 0.72rem;">
+            <span id="inspTxnMeta">Select a transaction to inspect</span>
+          </div>
+        </div>
+      </div>
+      <button id="btnCloseDecisionDrawer" class="btn-drawer-close" aria-label="Close Decision Inspector">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+
+    <div class="decision-drawer-body" id="decisionDrawerBody">
+      <!-- Section 1: Transaction & Diagnosis -->
+      <div>
+        <div class="inspector-section-title">
+          <span class="material-symbols-outlined" style="font-size: 16px;">biotech</span>
+          <span>1. Root-Cause Diagnosis</span>
+        </div>
+        <div style="background: var(--bg-canvas); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 12px 16px; display: flex; flex-direction: column; gap: 8px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 0.76rem; color: var(--text-muted);">Diagnosis Method:</span>
+            <span id="inspMethodBadge" class="badge-tag badge-green">Deterministic Rule</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 0.76rem; color: var(--text-muted);">Root Cause:</span>
+            <strong id="inspRootCause" style="font-size: 0.84rem; color: var(--text-primary);">--</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 0.76rem; color: var(--text-muted);">Diagnostic Confidence:</span>
+            <span id="inspConfidence" style="font-family: var(--font-mono); font-size: 0.78rem;">100%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: Candidate Actions & Expected Recovery Value (ERV) -->
+      <div>
+        <div class="inspector-section-title">
+          <span class="material-symbols-outlined" style="font-size: 16px;">calculate</span>
+          <span>2. Candidate Actions & Expected Recovery Value (ERV)</span>
+        </div>
+        <div style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 6px;">
+          Formula: <code style="font-family: var(--font-mono); background: var(--bg-canvas); padding: 2px 4px; border-radius: 3px;">ERV = P(rec) × Amount − Cost − Friction − Escalation</code>
+        </div>
+        <div style="overflow-x: auto;">
+          <table class="erv-table">
+            <thead>
+              <tr>
+                <th>Candidate Action</th>
+                <th>P(rec)</th>
+                <th>Cost</th>
+                <th>Friction</th>
+                <th>ERV (₹)</th>
+                <th>Policy Status</th>
+              </tr>
+            </thead>
+            <tbody id="inspErvTableBody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Section 3: Deterministic Policy Guardrail Checks -->
+      <div>
+        <div class="inspector-section-title">
+          <span class="material-symbols-outlined" style="font-size: 16px;">verified_user</span>
+          <span>3. Deterministic Policy Guardrails</span>
+        </div>
+        <div class="policy-checklist" id="inspPolicyChecklist">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+
+      <!-- Section 4: Counterfactual Explanations -->
+      <div>
+        <div class="inspector-section-title">
+          <span class="material-symbols-outlined" style="font-size: 16px;">question_answer</span>
+          <span>4. Decision Explanation & Counterfactuals</span>
+        </div>
+        <div class="counterfactual-box" id="inspExplanationBox">
+          Select an audit log entry to inspect why this recovery action was authorized over competing alternatives.
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Application Controller -->
+  <script src="/static/app.js?v=20260905_v10"></script>
+</body>
+</html>

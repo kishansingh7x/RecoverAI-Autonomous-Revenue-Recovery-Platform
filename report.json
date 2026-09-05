@@ -1,0 +1,116 @@
+{
+  "summary": {
+    "total_transactions": 200,
+    "total_batch_volume_inr": 2406969.92,
+    "transactions_at_risk": 60,
+    "revenue_at_risk_inr": 597460.97,
+    "verified_recovered_transactions": 5,
+    "transactions_recovered": 5,
+    "transaction_recovery_rate_pct": 8.33,
+    "verified_recovered_revenue_inr": 23481.14,
+    "revenue_recovered_inr": 23481.14,
+    "revenue_recovery_rate_pct": 3.93,
+    "overall_recovery_rate_pct": 3.93,
+    "net_recovered_value_inr": 23470.61,
+    "total_modeled_recovery_cost_inr": 10.53,
+    "cost_per_recovered_payment_inr": 2.11,
+    "average_attempts_to_recovery": 1.0
+  },
+  "recovery_economics": {
+    "gross_verified_recovered_revenue_inr": 23481.14,
+    "total_modeled_recovery_cost_inr": 10.53,
+    "net_recovered_value_inr": 23470.61,
+    "cost_per_recovered_payment_inr": 2.11,
+    "cost_breakdown": {
+      "sms_cost_inr": 3.75,
+      "whatsapp_cost_inr": 5.5,
+      "retry_cost_inr": 0.8,
+      "llm_cost_inr": 0.48,
+      "escalation_cost_inr": 0.0
+    },
+    "economic_model": {
+      "type": "simulation_assumptions",
+      "description": "Configurable simulation assumptions used for comparative economic evaluation",
+      "sms_cost_inr": 0.25,
+      "whatsapp_cost_inr": 0.5,
+      "retry_cost_inr": 0.1,
+      "llm_cost_inr": 0.04,
+      "escalation_cost_inr": 15.0
+    }
+  },
+  "ai_judgment_discipline": {
+    "total_diagnoses": 60,
+    "deterministic_diagnosis_share_pct": 80.0,
+    "resolved_by_rules": 48,
+    "resolved_by_rules_pct": 80.0,
+    "llm_fallback_share_pct": 20.0,
+    "resolved_by_llm_fallback": 12,
+    "resolved_by_llm_fallback_pct": 20.0,
+    "llm_calls_avoided": 48,
+    "target_rule_resolution_achieved": true
+  },
+  "compliance_guardrails": {
+    "total_stopped": 4,
+    "stopped_for_opt_out": 4,
+    "stopped_for_max_attempts": 0,
+    "other_stops": 0
+  },
+  "by_failure_code": [
+    {
+      "failure_code": "abandoned_or_unclassified",
+      "at_risk_count": 12,
+      "at_risk_amount": 219572.23,
+      "recovered_count": 2,
+      "recovered_amount": 7381.86,
+      "recovery_rate_pct": 3.4
+    },
+    {
+      "failure_code": "insufficient_funds",
+      "at_risk_count": 13,
+      "at_risk_amount": 122315.96,
+      "recovered_count": 1,
+      "recovered_amount": 4089.66,
+      "recovery_rate_pct": 3.3
+    },
+    {
+      "failure_code": "mandate_expired",
+      "at_risk_count": 5,
+      "at_risk_amount": 96057.17,
+      "recovered_count": 0,
+      "recovered_amount": 0,
+      "recovery_rate_pct": 0.0
+    },
+    {
+      "failure_code": "bank_declined",
+      "at_risk_count": 10,
+      "at_risk_amount": 47410.35,
+      "recovered_count": 2,
+      "recovered_amount": 12009.62,
+      "recovery_rate_pct": 25.3
+    },
+    {
+      "failure_code": "card_expired",
+      "at_risk_count": 10,
+      "at_risk_amount": 47402.55,
+      "recovered_count": 0,
+      "recovered_amount": 0,
+      "recovery_rate_pct": 0.0
+    },
+    {
+      "failure_code": "otp_timeout",
+      "at_risk_count": 3,
+      "at_risk_amount": 41877.1,
+      "recovered_count": 0,
+      "recovered_amount": 0,
+      "recovery_rate_pct": 0.0
+    },
+    {
+      "failure_code": "gateway_timeout",
+      "at_risk_count": 7,
+      "at_risk_amount": 22825.61,
+      "recovered_count": 0,
+      "recovered_amount": 0,
+      "recovery_rate_pct": 0.0
+    }
+  ]
+}
