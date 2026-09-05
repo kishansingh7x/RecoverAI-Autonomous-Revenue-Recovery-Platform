@@ -29,6 +29,7 @@ ENV/
 *.sqlite3
 recovery.db
 recovery.db-journal
+!data/seed_recovery.db
 
 # Logs & temporary run files
 *.log

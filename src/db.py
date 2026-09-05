@@ -10,7 +10,17 @@ from pathlib import Path
 def get_default_db_path() -> Path:
     """Returns the appropriate SQLite DB path, using /tmp on Vercel/serverless environments."""
     if os.getenv("VERCEL"):
-        return Path("/tmp/recovery.db")
+        tmp_db = Path("/tmp/recovery.db")
+        if not tmp_db.exists():
+            seed_db = Path(__file__).resolve().parent.parent / "data" / "seed_recovery.db"
+            if seed_db.exists():
+                try:
+                    import shutil
+                    tmp_db.parent.mkdir(parents=True, exist_ok=True)
+                    shutil.copy2(seed_db, tmp_db)
+                except Exception:
+                    pass
+        return tmp_db
     return Path(__file__).resolve().parent.parent / "recovery.db"
 
 DEFAULT_DB_PATH = get_default_db_path()
@@ -18,9 +28,7 @@ DEFAULT_DB_PATH = get_default_db_path()
 def get_connection(db_path=None):
     """Returns a sqlite3 connection with Row factory enabled."""
     target_path = Path(db_path) if db_path else DEFAULT_DB_PATH
-    if os.getenv("VERCEL") and not target_path.exists():
-        target_path.parent.mkdir(parents=True, exist_ok=True)
-        ensure_db_schema(target_path)
+    target_path.parent.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(target_path)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys = ON;")
