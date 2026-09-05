@@ -346,13 +346,13 @@ def get_support_callbacks(limit: int = 20, db_path=None) -> list:
     conn.close()
     return [dict(r) for r in rows]
 
-def ensure_db_schema():
+def ensure_db_schema(db_path=None):
     """Ensures all tables and migration columns exist without wiping existing data."""
-    conn = get_connection()
+    conn = get_connection(db_path)
     cursor = conn.cursor()
 
     # Create tables if not exist
-    init_db(wipe=False)
+    init_db(db_path=db_path, wipe=False)
 
     # Migrate transactions table if missing recovery_state or verification fields
     cursor.execute("PRAGMA table_info(transactions);")

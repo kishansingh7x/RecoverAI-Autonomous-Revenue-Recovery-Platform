@@ -15,7 +15,7 @@ from datetime import datetime
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import HTMLResponse, FileResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
@@ -133,19 +133,20 @@ def get_health() -> Dict[str, Any]:
 @app.get("/api/metrics")
 def get_metrics() -> Dict[str, Any]:
     """Returns headline recovery metrics, AI discipline split, and compliance stats."""
-    if not REPORT_PATH.exists() or not DEFAULT_DB_PATH.exists():
-        # Automatically generate initial batch if missing
-        execute_full_pipeline(count=200, seed=42)
+    ensure_db_schema(DEFAULT_DB_PATH)
     
-    try:
-        with open(REPORT_PATH, "r", encoding="utf-8") as f:
-            data = json.load(f)
-            if "recovery_economics" in data and "net_recovered_value_inr" in data.get("summary", {}):
-                return data
-        return calculate_metrics()
-    except Exception as e:
-        metrics = calculate_metrics()
-        return metrics
+    # Read pre-packaged or active report.json first for instant sub-millisecond response
+    rep_path = REPORT_PATH if REPORT_PATH.exists() else (PROJECT_ROOT / "report.json")
+    if rep_path.exists():
+        try:
+            with open(rep_path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                if "recovery_economics" in data and "net_recovered_value_inr" in data.get("summary", {}):
+                    return data
+        except Exception:
+            pass
+
+    return calculate_metrics()
 
 
 def execute_full_pipeline(count: int, seed: int) -> Dict[str, Any]:
@@ -714,7 +715,7 @@ def serve_dashboard():
     """Serves the flagship RecoverAI web dashboard."""
     index_file = WEB_DIR / "index.html"
     if index_file.exists():
-        return FileResponse(str(index_file))
+        return HTMLResponse(content=index_file.read_text(encoding="utf-8"))
     return JSONResponse(
         status_code=200,
         content={"message": "RecoverAI API is online. Frontend files are being initialized at /static."}
