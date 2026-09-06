@@ -1,0 +1,13 @@
+# Vercel Deployment Ignore Rules
+tests/
+app.py
+requirements-dev.txt
+.pytest_cache/
+.github/
+PRD_AI_Revenue_Recovery_Agent.md
+PRODUCT_DOCUMENTATION_AND_CASE_STUDY.md
+DEPLOYMENT.md
+Dockerfile
+docker-compose.yml
+*.log
+scratch/
