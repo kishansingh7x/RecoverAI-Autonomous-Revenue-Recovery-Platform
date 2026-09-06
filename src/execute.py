@@ -35,7 +35,7 @@ from src.constants import (
 )
 from src.llm_client import generate_recovery_message
 
-def execute_recovery_actions(db_path=None, check_idempotency: bool = True) -> List[Dict[str, Any]]:
+def execute_recovery_actions(db_path=None, check_idempotency: bool = True, use_llm: bool = False) -> List[Dict[str, Any]]:
     """
     Executes bounded recovery actions for all diagnosed transactions.
     Enforces compliance stopping rules, attempt caps, and logs the full audit trail.
@@ -214,7 +214,8 @@ def execute_recovery_actions(db_path=None, check_idempotency: bool = True) -> Li
             recommended_action=rec_action,
             action_description=action_desc,
             customer_name=customer_name,
-            tone="friendly Hinglish" if rec.get("channel") != "b2b_invoice" else "professional"
+            tone="friendly Hinglish" if rec.get("channel") != "b2b_invoice" else "professional",
+            use_llm=use_llm
         )
 
         reasoning = (

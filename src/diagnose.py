@@ -28,7 +28,7 @@ from src.constants import (
 )
 from src.llm_client import diagnose_with_llm
 
-def diagnose_transactions(db_path=None) -> List[Dict[str, Any]]:
+def diagnose_transactions(db_path=None, use_llm: bool = False) -> List[Dict[str, Any]]:
     """
     Diagnoses root causes and recommends actions for all flagged transactions.
     Pass 1: Deterministic lookup table (target: >=80% resolved by rules).
@@ -85,7 +85,7 @@ def diagnose_transactions(db_path=None) -> List[Dict[str, Any]]:
 
         else:
             # Pass 2: LLM Fallback (unrecognized code, null failure_code, or ambiguous checkout drop)
-            llm_result = diagnose_with_llm(txn)
+            llm_result = diagnose_with_llm(txn, use_llm=use_llm)
             root_cause = llm_result["root_cause"]
             action = llm_result["recommended_action"]
             confidence = llm_result["confidence"]

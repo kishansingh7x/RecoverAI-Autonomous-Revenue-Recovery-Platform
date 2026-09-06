@@ -34,7 +34,7 @@ ELIGIBLE_PTP_ACTIONS = {
     ACTION_SEND_B2B_REMINDER
 }
 
-def process_promises_to_pay(db_path=None, seed: int = 42, as_of: datetime = None) -> Dict[str, Any]:
+def process_promises_to_pay(db_path=None, seed: int = 42, as_of: datetime = None, use_llm: bool = False) -> Dict[str, Any]:
     """
     1. Identifies transactions that received eligible recovery contact.
     2. Simulates ~40% making a promise to pay (2-10 days out).
@@ -177,7 +177,8 @@ def process_promises_to_pay(db_path=None, seed: int = 42, as_of: datetime = None
                     recommended_action=ACTION_SEND_REMINDER_SMS,
                     action_description=f"Reminder regarding payment of ₹{amount:,.0f} promised for {p['promised_date']}.",
                     customer_name=cust_name,
-                    tone="friendly Hinglish" if p["channel"] != "b2b_invoice" else "professional"
+                    tone="friendly Hinglish" if p["channel"] != "b2b_invoice" else "professional",
+                    use_llm=use_llm
                 )
 
                 reasoning = (

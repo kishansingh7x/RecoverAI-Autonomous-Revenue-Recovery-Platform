@@ -162,15 +162,15 @@ def execute_full_pipeline(count: int, seed: int) -> Dict[str, Any]:
     det_time = round(time.time() - t0, 3)
 
     t0 = time.time()
-    diag_res = diagnose_transactions()
+    diag_res = diagnose_transactions(use_llm=False)
     diag_time = round(time.time() - t0, 3)
 
     t0 = time.time()
-    exec_res = execute_recovery_actions()
+    exec_res = execute_recovery_actions(use_llm=False)
     exec_time = round(time.time() - t0, 3)
 
     t0 = time.time()
-    ptp_res = process_promises_to_pay(seed=seed)
+    ptp_res = process_promises_to_pay(seed=seed, use_llm=False)
     ptp_time = round(time.time() - t0, 3)
 
     metrics = calculate_metrics()

@@ -131,13 +131,15 @@ def call_llm(prompt: str, model: Optional[str] = None, max_tokens: int = 400) ->
 
     return None
 
-def diagnose_with_llm(transaction_dict: Dict[str, Any]) -> Dict[str, Any]:
+def diagnose_with_llm(transaction_dict: Dict[str, Any], use_llm: bool = True) -> Dict[str, Any]:
     """
     Structured fallback diagnosis for ambiguous transactions.
     PRD Section 7.2 & 7.3.
     Returns dict with keys: root_cause, recommended_action, confidence.
     """
-    prompt = f"""You are a payment-recovery diagnosis assistant for an Indian fintech merchant.
+    raw_response = None
+    if use_llm:
+        prompt = f"""You are a payment-recovery diagnosis assistant for an Indian fintech merchant.
 Given this failed/abandoned transaction, return ONLY valid JSON with keys:
 root_cause (string, one sentence), recommended_action (must be exactly one of:
 send_reminder_sms, send_update_card_link, suggest_alternate_payment_method,
@@ -146,7 +148,7 @@ escalate_to_human), confidence (float 0-1).
 
 Transaction: {json.dumps(transaction_dict, default=str)}"""
 
-    raw_response = call_llm(prompt)
+        raw_response = call_llm(prompt)
 
     if raw_response:
         try:
@@ -231,26 +233,28 @@ def generate_recovery_message(
     recommended_action: str,
     action_description: str,
     customer_name: str,
-    tone: str = "friendly Hinglish"
+    tone: str = "friendly Hinglish",
+    use_llm: bool = True
 ) -> str:
     """
     Generates personalized, compliant recovery copy under 300 characters.
     PRD Section 7.2.
-    Uses LLM if available, otherwise uses high-quality deterministic templates.
+    Uses LLM if available and use_llm is True, otherwise uses high-quality deterministic templates.
     """
-    prompt = f"""Write a short, polite payment recovery message (SMS-length, under 300 characters)
+    if use_llm:
+        prompt = f"""Write a short, polite payment recovery message (SMS-length, under 300 characters)
 for an Indian customer named {customer_name}. Tone: {tone} (professional | friendly Hinglish).
 Context: payment of ₹{amount:,.2f} failed due to {root_cause}. Recommended action for
 the customer: {action_description}. Do not mention internal system
 details, confidence scores, or that this was AI-generated. Return only the message text."""
 
-    raw_response = call_llm(prompt)
-    if raw_response:
-        msg = raw_response.strip().strip('"').strip("'")
-        # Ensure under 300 characters
-        if len(msg) > 300:
-            msg = msg[:297] + "..."
-        return msg
+        raw_response = call_llm(prompt)
+        if raw_response:
+            msg = raw_response.strip().strip('"').strip("'")
+            # Ensure under 300 characters
+            if len(msg) > 300:
+                msg = msg[:297] + "..."
+            return msg
 
     # High quality deterministic template fallback
     first_name = customer_name.split()[0] if customer_name else "Customer"
