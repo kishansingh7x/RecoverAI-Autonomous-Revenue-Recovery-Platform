@@ -1081,8 +1081,11 @@ async function verifyAuditIntegrity() {
     } else {
       icon.style.color = "var(--coral-main)";
       icon.textContent = "gpp_bad";
-      label.textContent = `TAMPER DETECTED: Event #${data.first_invalid_event || 'Unknown'}`;
-      alert(`⚠️ Audit Chain Tamper Detected!\n\nTampering identified at event #${data.first_invalid_event}.\nMessage: ${data.message}`);
+      const eventNum = (typeof data.first_invalid_event === "object" && data.first_invalid_event !== null)
+        ? (data.first_invalid_event.index !== undefined ? data.first_invalid_event.index + 1 : (data.first_invalid_event.action_id || JSON.stringify(data.first_invalid_event)))
+        : (data.first_invalid_event || "Unknown");
+      label.textContent = `TAMPER DETECTED: Event #${eventNum}`;
+      alert(`⚠️ Audit Chain Tamper Detected!\n\nTampering identified at event #${eventNum}.\nMessage: ${data.message}`);
     }
   } catch (err) {
     console.error("Audit verification error:", err);

@@ -15,7 +15,7 @@ import random
 from datetime import datetime, timedelta
 from typing import List, Dict, Any
 
-from src.db import get_connection
+from src.db import get_connection, get_last_audit_hash, compute_event_hash
 from src.constants import (
     ACTION_SEND_REMINDER_SMS,
     ACTION_SUGGEST_ALTERNATE_METHOD,
@@ -118,6 +118,8 @@ def process_promises_to_pay(db_path=None, seed: int = 42, as_of: datetime = None
     unfulfilled_promises = [dict(r) for r in cursor.fetchall()]
 
     follow_ups_sent = 0
+    last_hash = get_last_audit_hash(cursor)
+
     for p in unfulfilled_promises:
         promised_dt = datetime.strptime(p["promised_date"], "%Y-%m-%d")
         if promised_dt <= now:
@@ -139,34 +141,18 @@ def process_promises_to_pay(db_path=None, seed: int = 42, as_of: datetime = None
 
             if is_opted_out:
                 # Enforce opt out
-                cursor.execute("""
-                    INSERT INTO actions_log (action_id, transaction_id, action_type, reasoning, message_sent, attempt_number, stopped_reason, timestamp)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                """, (
-                    f"act_{txn_id}_ptp_opt",
-                    txn_id,
-                    ACTION_STOP_CONTACT,
-                    "Customer promised to pay but is opted out of messaging. Halting follow-up outreach.",
-                    None,
-                    next_attempt,
-                    STOPPED_REASON_OPTED_OUT,
-                    now_str
-                ))
+                action_id = f"act_{txn_id}_ptp_opt"
+                action_type = ACTION_STOP_CONTACT
+                reasoning = "Customer promised to pay but is opted out of messaging. Halting follow-up outreach."
+                msg_sent = None
+                stopped_reason = STOPPED_REASON_OPTED_OUT
             elif next_attempt > MAX_CONTACT_ATTEMPTS:
                 # Enforce max attempts
-                cursor.execute("""
-                    INSERT INTO actions_log (action_id, transaction_id, action_type, reasoning, message_sent, attempt_number, stopped_reason, timestamp)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                """, (
-                    f"act_{txn_id}_ptp_max",
-                    txn_id,
-                    ACTION_STOP_CONTACT,
-                    f"Unfulfilled promise follow-up exceeded max attempts ({MAX_CONTACT_ATTEMPTS}). Halting outreach.",
-                    None,
-                    next_attempt,
-                    STOPPED_REASON_MAX_ATTEMPTS,
-                    now_str
-                ))
+                action_id = f"act_{txn_id}_ptp_max"
+                action_type = ACTION_STOP_CONTACT
+                reasoning = f"Unfulfilled promise follow-up exceeded max attempts ({MAX_CONTACT_ATTEMPTS}). Halting outreach."
+                msg_sent = None
+                stopped_reason = STOPPED_REASON_MAX_ATTEMPTS
             else:
                 # Send polite follow-up reminder
                 cust_name = p["customer_name"]
@@ -185,21 +171,40 @@ def process_promises_to_pay(db_path=None, seed: int = 42, as_of: datetime = None
                     f"Promise-to-pay date ({p['promised_date']}) elapsed without payment fulfillment. "
                     f"Sending follow-up reminder. Attempt {next_attempt} of {MAX_CONTACT_ATTEMPTS}."
                 )
-
-                cursor.execute("""
-                    INSERT INTO actions_log (action_id, transaction_id, action_type, reasoning, message_sent, attempt_number, stopped_reason, timestamp)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                """, (
-                    f"act_{txn_id}_ptp_fup_{next_attempt}",
-                    txn_id,
-                    ACTION_SEND_REMINDER_SMS,
-                    reasoning,
-                    msg,
-                    next_attempt,
-                    None,
-                    now_str
-                ))
+                action_id = f"act_{txn_id}_ptp_fup_{next_attempt}"
+                action_type = ACTION_SEND_REMINDER_SMS
+                msg_sent = msg
+                stopped_reason = None
                 follow_ups_sent += 1
+
+            evt_hash = compute_event_hash(
+                timestamp=now_str,
+                transaction_id=txn_id,
+                action_type=action_type,
+                reasoning=reasoning,
+                attempt_number=next_attempt,
+                previous_hash=last_hash
+            )
+
+            cursor.execute("""
+                INSERT INTO actions_log (
+                    action_id, transaction_id, action_type, reasoning, message_sent,
+                    attempt_number, stopped_reason, timestamp, previous_hash, event_hash
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                action_id,
+                txn_id,
+                action_type,
+                reasoning,
+                msg_sent,
+                next_attempt,
+                stopped_reason,
+                now_str,
+                last_hash,
+                evt_hash
+            ))
+            last_hash = evt_hash
 
             # Mark follow_up_sent in promises_to_pay
             cursor.execute("""
